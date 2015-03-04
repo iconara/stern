@@ -1,0 +1,12 @@
+.ruby-version
+.ruby-gemset
+.rvmrc
+/Gemfile.lock
+/coverage
+/benchmark
+/tmp
+/doc
+/.yardoc
+/TODO.md
+/tags
+/pkg
