@@ -5,7 +5,6 @@ end
 
 require 'stern/protocol/kafka_codec'
 require 'stern/protocol/kafka_byte_buffer'
-require 'stern/protocol/address'
 require 'stern/protocol/broker'
 require 'stern/protocol/message_set'
 require 'stern/protocol/topic_metadata'
