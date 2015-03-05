@@ -82,6 +82,84 @@ module Stern
         described_class.new(messages)
       end
 
+      describe '#to_b' do
+        it 'encodes an empty message set to an empty byte array' do
+          bytes = described_class.new([]).to_b
+          expect(bytes).to be_empty
+        end
+
+        it 'encodes a message set with a single message' do
+          bytes = described_class.new([Message.new('foo', 'bar', 123456)]).to_b
+          expect(bytes).to eql(
+            "\x00\x00\x00\x00\x00\x01\xe2\x40" +
+            "\x00\x00\x00\x14" +
+            "\xb8\xba\x5f\x57" +
+            "\x00" +
+            "\x00" +
+            "\x00\x00\x00\x03foo" +
+            "\x00\x00\x00\x03bar"
+          )
+        end
+
+        it 'encodes a message set with multiple messages' do
+          messages = [
+            Message.new('foo', 'bar', 0x1234),
+            Message.new('hello', 'world', 0x5678),
+            Message.new('biff', 'boff', 0x9abc),
+          ]
+          bytes = described_class.new(messages).to_b
+          expect(bytes).to eql(
+            "\x00\x00\x00\x00\x00\x00\x12\x34" +
+            "\x00\x00\x00\x14" +
+            "\xb8\xba\x5f\x57" +
+            "\x00" +
+            "\x00" +
+            "\x00\x00\x00\x03foo" +
+            "\x00\x00\x00\x03bar" +
+            "\x00\x00\x00\x00\x00\x00\x56\x78" +
+            "\x00\x00\x00\x18" +
+            "\x6b\xe8\xd0\x32" +
+            "\x00" +
+            "\x00" +
+            "\x00\x00\x00\x05hello" +
+            "\x00\x00\x00\x05world" +
+            "\x00\x00\x00\x00\x00\x00\x9a\xbc" +
+            "\x00\x00\x00\x16" +
+            "\xb\x80\x6e\xf1" +
+            "\x00" +
+            "\x00" +
+            "\x00\x00\x00\x04biff" +
+            "\x00\x00\x00\x04boff"
+          )
+        end
+
+        it 'encodes a message set with a message with a nil key' do
+          bytes = described_class.new([Message.new(nil, 'bar', 123456)]).to_b
+          expect(bytes).to eql(
+            "\x00\x00\x00\x00\x00\x01\xe2\x40" +
+            "\x00\x00\x00\x11" +
+            "\x0\x7\xf2\xc7" +
+            "\x00" +
+            "\x00" +
+            "\xff\xff\xff\xff" +
+            "\x00\x00\x00\x03bar"
+          )
+        end
+
+        it 'encodes a message set with a message with a nil value' do
+          bytes = described_class.new([Message.new('foo', nil, 123456)]).to_b
+          expect(bytes).to eql(
+            "\x00\x00\x00\x00\x00\x01\xe2\x40" +
+            "\x00\x00\x00\x11" +
+            "\x55\xe6\x45\x4e" +
+            "\x00" +
+            "\x00" +
+            "\x00\x00\x00\x03foo" +
+            "\xff\xff\xff\xff"
+          )
+        end
+      end
+
       describe '.decode' do
         context 'when the byte array is empty' do
           it 'returns an empty message set' do

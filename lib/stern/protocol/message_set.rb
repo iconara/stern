@@ -1,3 +1,5 @@
+require 'zlib'
+
 module Stern
   module Protocol
     class MessageSet
@@ -39,6 +41,18 @@ module Stern
 
       def hash
         messages.hash
+      end
+
+      def to_b
+        components = []
+        format = 'Q>Na*' * messages.size
+        messages.each do |message|
+          bytes = message.to_b
+          components << message.offset
+          components << bytes.bytesize
+          components << bytes
+        end
+        components.pack(format)
       end
 
       def self.decode(bytes)
@@ -90,6 +104,19 @@ module Stern
 
       def hash
         fnv_hash(@key, @value, @offset)
+      end
+
+      def to_b
+        bytes = [
+          0,
+          0,
+          @key ? @key.bytesize : -1,
+          @key,
+          @value ? @value.bytesize : -1,
+          @value
+        ].pack('ccNa*Na*')
+        bytes = [Zlib.crc32(bytes)].pack('N') << bytes
+        bytes
       end
     end
 
