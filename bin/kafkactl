@@ -161,6 +161,27 @@ function clear() {
   rm -rf $BASE_DIR/kafka-* $BASE_DIR/zookeeper
 }
 
+function status() {
+  errors=0
+  pid=$(pid_from_port $ZOOKEEPER_PORT)
+  if [[ -n $pid ]]; then
+    log "ZooKeeper running on port $ZOOKEEPER_PORT"
+  else
+    log "ZooKeeper not running"
+    ((errors++))
+  fi
+  for port in $(broker_ports); do
+    pid=$(pid_from_port $port)
+    if [[ -n $pid ]]; then
+      log "Kafka running on port $port"
+    else
+      log "Kafka not running on port $port"
+      ((errors++))
+    fi
+  done
+  return $errors
+}
+
 case "$1" in
   start)
     start || exit 1
@@ -171,11 +192,14 @@ case "$1" in
   restart)
     stop && start || exit 1
     ;;
+  status)
+    status || exit 1
+    ;;
   clear)
     clear || exit 1
     ;;
   *)
-    echo "Usage: $NAME {start|stop|restart|clear}" >&2
+    echo "Usage: $NAME {start|stop|status|restart|clear}" >&2
     exit 3
     ;;
 esac
