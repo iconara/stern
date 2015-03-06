@@ -91,7 +91,7 @@ module Stern
 
       attr_reader :key, :value, :offset
 
-      def initialize(key, value, offset)
+      def initialize(key, value, offset=-1)
         @key = key
         @value = value
         @offset = offset
