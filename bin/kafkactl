@@ -133,23 +133,31 @@ function pid_from_port() {
 
 function stop_kafka() {
   for port in $(broker_ports); do
-    pid=$(pid_from_port $port)
-    if [[ -n $pid ]]; then
-      echo "Stopping Kafka on port $port (PID $pid)"
-      kill_process $pid
-    fi
-    rm -f $BASE_DIR/kafka-$port/kafka.pid
+    while true; do
+      pid=$(pid_from_port $port)
+      if [[ -n $pid ]]; then
+        echo "Stopping Kafka on port $port (PID $pid)"
+        kill_process $pid
+      else
+        break
+      fi
+      rm -f $BASE_DIR/kafka-$port/kafka.pid
+    done
   done
   return 0
 }
 
 function stop_zookeeper() {
-  pid=$(pid_from_port $ZOOKEEPER_PORT)
-  if [[ -n $pid ]]; then
-    echo "Stopping ZooKeeper (PID $pid)"
-    kill_process $pid
-  fi
-  rm -f $BASE_DIR/zookeeper/zookeeper.pid
+  while true; do
+    pid=$(pid_from_port $ZOOKEEPER_PORT)
+    if [[ -n $pid ]]; then
+      echo "Stopping ZooKeeper (PID $pid)"
+      kill_process $pid
+    else
+      break
+    fi
+    rm -f $BASE_DIR/zookeeper/zookeeper.pid
+  done
   return 0
 }
 
