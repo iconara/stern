@@ -79,6 +79,20 @@ module Stern
           expect(partitions).to be_empty
         end
 
+        it 'deodes a frame with brokers' do
+          frame =  "\x00\x00\x00\x03"
+          frame << broker1
+          frame << broker2
+          frame << broker3
+          frame << "\x00\x00\x00\x00"
+          response = described_class.decode(frame)
+          expect(response.brokers).to eq([
+            Broker.new(0x01020304, 'one.example.com', 0x2384),
+            Broker.new(0x05060708, 'two.example.com', 0x2384),
+            Broker.new(0x090a0b0c, 'three.example.com', 0x2384),
+          ])
+        end
+
         it 'decodes a frame with a single topic with two partitions' do
           frame =  "\x00\x00\x00\x03"
           frame << broker1

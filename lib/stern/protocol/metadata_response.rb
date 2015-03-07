@@ -1,9 +1,10 @@
 module Stern
   module Protocol
     class MetadataResponse < Response
-      attr_reader :topic_metadata
+      attr_reader :brokers, :topic_metadata
 
-      def initialize(topic_metadata)
+      def initialize(brokers, topic_metadata)
+        @brokers = brokers
         @topic_metadata = topic_metadata
       end
 
@@ -11,7 +12,7 @@ module Stern
         buffer = KafkaByteBuffer.new(bytes)
         brokers = read_brokers(buffer)
         topics = read_topic_metadata(buffer, brokers)
-        new(topics)
+        new(brokers.values, topics)
       end
 
       private
