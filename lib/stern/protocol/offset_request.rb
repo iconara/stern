@@ -1,7 +1,5 @@
 module Stern
   module Protocol
-    attr_reader :replica_id
-
     class OffsetRequest < Request
       def initialize(client_id, replica_id, queries)
         super(2, client_id)

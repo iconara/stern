@@ -7,18 +7,18 @@ module Stern
     describe OffsetRequest do
       describe '#to_b' do
         it 'encodes a request with no topics' do
-          bytes = described_class.new(nil, 0x11223344, []).to_b
+          bytes = described_class.new(nil, -1, []).to_b
           expect(bytes).to eq(
-            "\x11\x22\x33\x44" +
+            "\xff\xff\xff\xff" +
             "\x00\x00\x00\x00"
           )
         end
 
         it 'encodes a request with a single topic with a single partition for a millisecond timestamp' do
           queries = [described_class::Query.new('topotopic', 0x00000007, 0x14be41f2d1e, 1)]
-          bytes = described_class.new(nil, 0x11223344, queries).to_b
+          bytes = described_class.new(nil, -1, queries).to_b
           expect(bytes).to eq(
-            "\x11\x22\x33\x44" +
+            "\xff\xff\xff\xff" +
             "\x00\x00\x00\x01" +
             "\x00\x09topotopic" +
             "\x00\x00\x00\x01" +
@@ -30,9 +30,9 @@ module Stern
 
         it 'encodes a request with a single topic with a single partition for the latest offset' do
           queries = [described_class::Query.new('topotopic', 0x00000007, -1, 1)]
-          bytes = described_class.new(nil, 0x11223344, queries).to_b
+          bytes = described_class.new(nil, -1, queries).to_b
           expect(bytes).to eq(
-            "\x11\x22\x33\x44" +
+            "\xff\xff\xff\xff" +
             "\x00\x00\x00\x01" +
             "\x00\x09topotopic" +
             "\x00\x00\x00\x01" +
@@ -44,9 +44,9 @@ module Stern
 
         it 'encodes a request with a single topic with a single partition for the earliest offset' do
           queries = [described_class::Query.new('topotopic', 0x00000007, -2, 1)]
-          bytes = described_class.new(nil, 0x11223344, queries).to_b
+          bytes = described_class.new(nil, -1, queries).to_b
           expect(bytes).to eq(
-            "\x11\x22\x33\x44" +
+            "\xff\xff\xff\xff" +
             "\x00\x00\x00\x01" +
             "\x00\x09topotopic" +
             "\x00\x00\x00\x01" +
@@ -64,9 +64,9 @@ module Stern
             described_class::Query.new('topicoco', 2, 0x14be41f2d1e, 1),
             described_class::Query.new('topicoco', 3, 0x14be41f2d1e, 1),
           ]
-          bytes = described_class.new(nil, 0x11223344, queries).to_b
+          bytes = described_class.new(nil, -1, queries).to_b
           expect(bytes).to eq(
-            "\x11\x22\x33\x44" +
+            "\xff\xff\xff\xff" +
             "\x00\x00\x00\x02" +
             "\x00\x09topotopic" +
             "\x00\x00\x00\x02" +
