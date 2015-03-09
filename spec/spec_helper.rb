@@ -18,4 +18,6 @@ unless ENV['COVERAGE'] == 'no' || RUBY_ENGINE == 'rbx'
   end
 end
 
+require 'support/kafkactl'
+
 require 'stern'
